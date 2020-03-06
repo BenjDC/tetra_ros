@@ -7,6 +7,7 @@
  */
 #include <ros.h>
 #include <geometry_msgs/Twist.h>
+#include <TetraROS/compactOdom.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -24,6 +25,7 @@
 
 ros::NodeHandle nh;
 geometry_msgs::Twist cmd_vel;
+TetraROS::compactOdom c_odom;
 
 HAL_Encoder_HandleTypeDef hencoder;
 
@@ -68,6 +70,7 @@ pid_win_handler ang_pid = {
 // callback on command velocity reception
 void cmd_vel_cb(const geometry_msgs::Twist& motor_command);
 ros::Subscriber<geometry_msgs::Twist> cmd_vel_sub("cmd_vel", &cmd_vel_cb);
+ros::Publisher compactOdom_pub("compact_odom", &c_odom);
 
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
@@ -125,6 +128,7 @@ void initTetraROS()
 
     nh.initNode();
     nh.subscribe(cmd_vel_sub);
+    nh.advertise(compactOdom_pub);
 
     x_pos = 0;
     y_pos = 0;
@@ -184,6 +188,14 @@ void loopTetraROS()
 		y_pos += lin_distance * sin(ang_pos);
 		x_speed = lin_speed_actual * cos(ang_pos);
 		y_speed = lin_speed_actual * sin(ang_pos);
+
+		c_odom.x_pos = x_pos;
+		c_odom.y_pos = y_pos;
+		c_odom.ang_pos = ang_pos;
+		c_odom.x_speed = x_speed;
+		c_odom.y_speed = y_speed;
+
+		compactOdom_pub.publish(&c_odom);
 
         
         currentTime = nh.now();
