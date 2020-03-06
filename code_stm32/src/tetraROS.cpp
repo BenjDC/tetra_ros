@@ -30,6 +30,12 @@ HAL_Encoder_HandleTypeDef hencoder;
 
 double lin_speed_scaled;
 double ang_speed_scaled;
+
+float x_pos;
+float y_pos;
+float x_speed;
+float y_speed;
+float ang_pos;
 uint16_t last_time_us;
 
 
