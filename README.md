@@ -2,7 +2,7 @@
 
 tetraROS est une implémentation utilisant ROS du robot à transmission différentielle "Tetra" de Carre92. Le but est d'utiliser [la pile de navigation ROS](http://wiki.ros.org/navigation) pour le faire naviguer en SLAM de façon Autonome.
 
-![Navigation ROS](https://github.com/BenjDC/tetraROS/ressources/overview_tf.png)
+![Navigation ROS](./ressources/overview_tf.png)
 
 
 ## Architecture
