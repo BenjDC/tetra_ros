@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(TetraROS)
+project(tetra_ros)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -11,7 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   joy
   roscpp
   rospy
-  rosserial_stm32
+  rosserial_python
   std_msgs
   teleop_twist_joy
   message_generation
@@ -108,7 +108,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES TetraROS
-  CATKIN_DEPENDS joy roscpp rospy rosserial_stm32 std_msgs teleop_twist_joy
+  CATKIN_DEPENDS joy roscpp rospy rosserial_python std_msgs teleop_twist_joy
 #  DEPENDS system_lib
 )
 
