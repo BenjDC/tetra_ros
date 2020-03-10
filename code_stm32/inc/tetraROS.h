@@ -20,9 +20,13 @@ float const wacc_max = 30.0f;	// dps/s
 float const joy_max = 0.5f; 	// m.s
 
 
+int const RESET_ODOMETRY = 1;
+int const SWITCH_MODE = 2;
+int const GET_BATTERY_STATE =3;
+
 void initTetraROS();
 void loopTetraROS();
-
+void tellBatteryLevel();
 
 
 

@@ -7,7 +7,8 @@
  */
 #include <ros.h>
 #include <geometry_msgs/Twist.h>
-#include <TetraROS/compactOdom.h>
+#include <std_msgs/Int16.h>
+#include <tetra_ros/compactOdom.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -24,11 +25,11 @@
 
 
 ros::NodeHandle nh;
-geometry_msgs::Twist cmd_vel;
-TetraROS::compactOdom c_odom;
+geometry_msgs::Twist msg_cmd_vel;
+tetra_ros::compactOdom msg_compact_odom;
+std_msgs::Int16 msg_command_management;
 
 HAL_Encoder_HandleTypeDef hencoder;
-
 
 double lin_speed_scaled;
 double ang_speed_scaled;
@@ -69,8 +70,11 @@ pid_win_handler ang_pid = {
 
 // callback on command velocity reception
 void cmd_vel_cb(const geometry_msgs::Twist& motor_command);
+void cmd_mgmt_cb(const std_msgs::Int16& management_command);
+
 ros::Subscriber<geometry_msgs::Twist> cmd_vel_sub("cmd_vel", &cmd_vel_cb);
-ros::Publisher compactOdom_pub("compact_odom", &c_odom);
+ros::Subscriber<std_msgs::Int16> cmd_mgmt_sub("cmd_mgmt", &cmd_mgmt_cb);
+ros::Publisher compactOdom_pub("compact_odom", &msg_compact_odom);
 
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
@@ -81,6 +85,31 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
   nh.getHardware()->reset_rbuf();
 }
 
+
+
+void cmd_mgmt_cb(const std_msgs::Int16& management_command)
+{
+	int mgmt_command = management_command.data;
+
+	switch(mgmt_command)
+	{
+	case RESET_ODOMETRY:
+		nh.loginfo("Resetting odometry");
+		x_pos =0;
+		y_pos = 0;
+		ang_pos =0;
+		break;
+	case SWITCH_MODE:
+		nh.loginfo("switch mode (not implemented yet)\n");
+		break;
+	case GET_BATTERY_STATE:
+		tellBatteryLevel();
+		break;
+	default:
+		break;
+
+	}
+}
 
 void cmd_vel_cb(const geometry_msgs::Twist& motor_command)
 {
@@ -105,7 +134,6 @@ void tellBatteryLevel()
     char *battery_msg = (char*)malloc(40 * sizeof(char));
     sprintf(battery_msg, "Battery voltage : %f\n", power_level_unit);
 
-    nh.loginfo("TetraROS initialization OK\n");
     nh.loginfo(battery_msg);
 }
 
@@ -117,6 +145,7 @@ void initHardware()
     HAL_Battery_Init();
     HAL_TIM_Base_Start(&htim14);
     last_time_us = __HAL_TIM_GET_COUNTER(&htim14);
+    nh.loginfo("TetraROS initialization OK\n");
 
 }
 void initTetraROS()
@@ -128,6 +157,7 @@ void initTetraROS()
 
     nh.initNode();
     nh.subscribe(cmd_vel_sub);
+    nh.subscribe(cmd_mgmt_sub);
     nh.advertise(compactOdom_pub);
 
     x_pos = 0;
@@ -186,16 +216,20 @@ void loopTetraROS()
 		ang_pos += ang_degrees;
 		x_pos += lin_distance * cos(ang_pos);
 		y_pos += lin_distance * sin(ang_pos);
+
 		x_speed = lin_speed_actual * cos(ang_pos);
 		y_speed = lin_speed_actual * sin(ang_pos);
 
-		c_odom.x_pos = x_pos;
-		c_odom.y_pos = y_pos;
-		c_odom.ang_pos = ang_pos;
-		c_odom.x_speed = x_speed;
-		c_odom.y_speed = y_speed;
+		msg_compact_odom.x_pos = x_pos;
+		msg_compact_odom.y_pos = y_pos;
+		msg_compact_odom.ang_pos = ang_pos;
+		msg_compact_odom.x_speed = x_speed;
+		msg_compact_odom.y_speed = y_speed;
+		msg_compact_odom.left_count = left_count;
+		msg_compact_odom.right_count = right_count;
 
-		compactOdom_pub.publish(&c_odom);
+
+		compactOdom_pub.publish(&msg_compact_odom);
 
         
         currentTime = nh.now();
