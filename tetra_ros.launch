@@ -1,0 +1,19 @@
+<!-- at_robot_system.launch -->
+
+<launch>
+    <machine name="laptopRobotique" address="192.168.0.20" user="robotique" password="Thalescom02" env-loader="/opt/ros/kinetic/env.sh">
+    <machine name="ubiquity" address="192.168.0.21" user="ubuntu" password="ubuntu" env-loader="/opt/ros/kinetic/env.sh">
+
+    <group ns="laptopRobotique">
+        <node machine="laptopRobotique" pkg="joy" name="joy_node" type="joy_node" output="screen"></node>
+        <node machine="laptopRobotique" pkg="teleop_twist_joy"  type="teleop_node" name="teleop_node" respawn="false" output="screen">
+        </node>
+    </group>
+
+    <group ns="at_robot">
+        <node machine="ubiquity" pkg="rosserial_python" type="serial_node" name="serial_node" output="screen">
+            <param name="baud" value="115200"/>  
+        </node>
+    </group>
+
+</launch>
