@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 import rospy
-from sensor_msgs import joy
-from tetraROS import compactOdom
-from std_msgs.msgs import Int16
+from tetra_ros.msg import compactOdom
+from std_msgs.msg import Int16
+from sensor_msgs.msg import Joy
 
 
-mgmt_pub = rospy.publisher('cmd_mgmt', std_msgs.msg.Int16)
+mgmt_pub = rospy.Publisher('cmd_mgmt', Int16, queue_size=10)
 
 def compactOdom_callback(odom_data):
     pass
@@ -13,20 +13,19 @@ def compactOdom_callback(odom_data):
 
 def joy_callback(joydata):
     if ((joydata.buttons[2]) == 1):
-        rospy.loginfo("reset odometry")
+        rospy.logdebug("reset odometry")
         mgmt_pub.publish(1)
 
     if ((joydata.buttons[3]) == 1):
-        rospy.loginfo("get battery level")
+        rospy.logdebug("get battery level")
         mgmt_pub.publish(3)
         pass
 
 
 def tetra_utility_loop():
     rospy.init_node('tetra_utility')
-    rospy.suscriber('compact_odom', compactOdom, compactOdom_callback)
-    rospy.suscriber('joy', joy, joy_callback)
-    rospy.publisher('cmd_mgmt', std_msgs.msg.Int16)
+    rospy.Subscriber('compact_odom', compactOdom, compactOdom_callback)
+    rospy.Subscriber('joy', Joy, joy_callback)
 
     r = rospy.Rate(100) # 10hz
     while not rospy.is_shutdown():
