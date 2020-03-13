@@ -178,7 +178,6 @@ void loopTetraROS()
 {
 
     nh.spinOnce();
-    ros::Time currentTime = nh.now();
     uint16_t current_time_us = __HAL_TIM_GET_COUNTER(&htim14);
     uint16_t delta_time_us = current_time_us-last_time_us;
 
@@ -233,14 +232,10 @@ void loopTetraROS()
 		msg_compact_odom.ang_pos = ang_pos;
 		msg_compact_odom.x_speed = x_speed;
 		msg_compact_odom.y_speed = y_speed;
-		msg_compact_odom.left_count = total_left_count;
-		msg_compact_odom.right_count = total_right_count;
-
+		msg_compact_odom.ang_speed = ang_speed_actual;
+		msg_compact_odom.stamp = nh.now();
 
 		compactOdom_pub.publish(&msg_compact_odom);
-
-        
-        currentTime = nh.now();
     }
 }
 
