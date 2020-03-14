@@ -71,7 +71,7 @@ pid_win_handler ang_pid = {
 
 // callback on command velocity reception
 void cmd_vel_cb(const geometry_msgs::Twist& motor_command);
-void cmd_mgmt_cb(const std_msgs::Int16& mana@ent_command);
+void cmd_mgmt_cb(const std_msgs::Int16& management_command);
 
 ros::Subscriber<geometry_msgs::Twist> cmd_vel_sub("cmd_vel", &cmd_vel_cb);
 ros::Subscriber<std_msgs::Int16> cmd_mgmt_sub("cmd_mgmt", &cmd_mgmt_cb);
