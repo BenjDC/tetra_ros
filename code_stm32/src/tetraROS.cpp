@@ -30,14 +30,13 @@ tetra_ros::compactOdom msg_compact_odom;
 std_msgs::Int16 msg_command_management;
 
 HAL_Encoder_HandleTypeDef hencoder;
+HAL_LED_HandleTypeDef hled;
 
 double lin_speed_scaled;
 double ang_speed_scaled;
 
 float x_pos;
 float y_pos;
-float x_speed;
-float y_speed;
 float ang_pos;
 uint16_t last_time_us;
 
@@ -70,7 +69,7 @@ pid_win_handler ang_pid = {
 
 // callback on command velocity reception
 void cmd_vel_cb(const geometry_msgs::Twist& motor_command);
-void cmd_mgmt_cb(const std_msgs::Int16& management_command);
+void cmd_mgmt_cb(const std_msgs::Int16& mana@ent_command);
 
 ros::Subscriber<geometry_msgs::Twist> cmd_vel_sub("cmd_vel", &cmd_vel_cb);
 ros::Subscriber<std_msgs::Int16> cmd_mgmt_sub("cmd_mgmt", &cmd_mgmt_cb);
@@ -142,11 +141,11 @@ void initHardware()
 {
     HAL_Motor_Init();
     HAL_Encoder_Init(&hencoder,&htim5,&htim2);
+    HAL_Led_Add(&hled,LED_GPIO_Port,LED_Pin);
     HAL_Battery_Init();
     HAL_TIM_Base_Start(&htim14);
     last_time_us = __HAL_TIM_GET_COUNTER(&htim14);
     nh.loginfo("TetraROS initialization OK\n");
-
 }
 void initTetraROS()
 {
@@ -154,7 +153,7 @@ void initTetraROS()
 
     HAL_Delay(1000);
     HAL_Motor_Set(HAL_MOTOR_ALL,HAL_MOTOR_AUTO,0);
-
+    
     nh.initNode();
     nh.subscribe(cmd_vel_sub);
     nh.subscribe(cmd_mgmt_sub);
@@ -217,17 +216,13 @@ void loopTetraROS()
 		x_pos += lin_distance * cos(ang_pos);
 		y_pos += lin_distance * sin(ang_pos);
 
-		x_speed = lin_speed_actual * cos(ang_pos);
-		y_speed = lin_speed_actual * sin(ang_pos);
-
 		msg_compact_odom.x_pos = x_pos;
 		msg_compact_odom.y_pos = y_pos;
 		msg_compact_odom.ang_pos = ang_pos;
-		msg_compact_odom.x_speed = x_speed;
-		msg_compact_odom.y_speed = y_speed;
+		msg_compact_odom.x_speed = lin_speed_actual * cos(ang_pos);
+		msg_compact_odom.y_speed = lin_speed_actual * sin(ang_pos);
 		msg_compact_odom.left_count = left_count;
 		msg_compact_odom.right_count = right_count;
-
 
 		compactOdom_pub.publish(&msg_compact_odom);
 
