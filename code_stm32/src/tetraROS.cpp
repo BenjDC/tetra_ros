@@ -38,6 +38,8 @@ double ang_speed_scaled;
 float x_pos;
 float y_pos;
 float ang_pos;
+int total_right_count;
+int total_left_count;
 uint16_t last_time_us;
 
 
@@ -97,6 +99,8 @@ void cmd_mgmt_cb(const std_msgs::Int16& management_command)
 		x_pos =0;
 		y_pos = 0;
 		ang_pos =0;
+		total_right_count = 0;
+		total_left_count = 0;
 		break;
 	case SWITCH_MODE:
 		nh.loginfo("switch mode (not implemented yet)\n");
@@ -161,6 +165,8 @@ void initTetraROS()
 
     x_pos = 0;
     y_pos = 0;
+    x_speed =0;
+    y_speed =0;
     ang_pos =0;
 
     tellBatteryLevel();
@@ -171,7 +177,6 @@ void loopTetraROS()
 {
 
     nh.spinOnce();
-    ros::Time currentTime = nh.now();
     uint16_t current_time_us = __HAL_TIM_GET_COUNTER(&htim14);
     uint16_t delta_time_us = current_time_us-last_time_us;
 
@@ -198,7 +203,7 @@ void loopTetraROS()
 
 		float const ang_delta_count = (float)(right_count-left_count);
 		float const ang_distance = (float)(ang_delta_count)*distance_per_pulse; // m
-		float const ang_degrees = ToDeg(fastAtan2(ang_distance,0.30)); // degree, wheel base = 30cm
+		float const ang_degrees = ToDeg(fastAtan2(ang_distance,0.29)); // degree, wheel base = 30cm
 		ang_speed_actual = ang_degrees/period_us;
 
 		float const lin_error = lin_speed_scaled-lin_speed_actual;
@@ -213,21 +218,20 @@ void loopTetraROS()
 
 		// odometry
 		ang_pos += ang_degrees;
-		x_pos += lin_distance * cos(ang_pos);
-		y_pos += lin_distance * sin(ang_pos);
+		x_pos += lin_distance * cos(ToRad(ang_pos));
+		y_pos += lin_distance * sin(ToRad(ang_pos));
+		total_right_count += right_count;
+		total_left_count += left_count;
 
 		msg_compact_odom.x_pos = x_pos;
 		msg_compact_odom.y_pos = y_pos;
 		msg_compact_odom.ang_pos = ang_pos;
 		msg_compact_odom.x_speed = lin_speed_actual * cos(ang_pos);
 		msg_compact_odom.y_speed = lin_speed_actual * sin(ang_pos);
-		msg_compact_odom.left_count = left_count;
-		msg_compact_odom.right_count = right_count;
+		msg_compact_odom.ang_speed = ang_speed_actual;
+		msg_compact_odom.stamp = nh.now();
 
 		compactOdom_pub.publish(&msg_compact_odom);
-
-        
-        currentTime = nh.now();
     }
 }
 
