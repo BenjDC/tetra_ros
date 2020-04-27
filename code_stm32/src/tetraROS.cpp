@@ -86,8 +86,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
   nh.getHardware()->reset_rbuf();
 }
 
-
-
 void cmd_mgmt_cb(const std_msgs::Int16& management_command)
 {
 	int mgmt_command = management_command.data;
@@ -138,6 +136,8 @@ void tellBatteryLevel()
     sprintf(battery_msg, "Battery voltage : %f\n", power_level_unit);
 
     nh.loginfo(battery_msg);
+
+    free(battery_msg);
 }
 
 
