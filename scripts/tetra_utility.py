@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import rospy
 from tetra_ros.msg import compactOdom
 from std_msgs.msg import Int16
@@ -44,21 +46,35 @@ def compactOdom_callback(odom_data):
 
 
 def joy_callback(joydata):
+
     if ((joydata.buttons[2]) == 1):
-        rospy.logdebug("reset odometry")
+        rospy.loginfo("reset odometry")
         mgmt_pub.publish(1)
 
     if ((joydata.buttons[3]) == 1):
-        rospy.logdebug("get battery level")
+        rospy.loginfo("get battery level")
         mgmt_pub.publish(3)
+
+    if ((joydata.buttons[4]) == 1):
+        rospy.loginfo("KILL NOW")
+        rospy.signal_shutdown("Kill from controller ")
 
 
 def tetra_utility_loop():
-    rospy.init_node('tetra_utility')
+    rospy.init_node('tetra_utility', disable_signals=True)
     rospy.Subscriber('compact_odom', compactOdom, compactOdom_callback)
     rospy.Subscriber('joy', Joy, joy_callback)
 
     r = rospy.Rate(500)  # 500hz
+
+    rospy.loginfo("Welcome to tetra_ros ! here are available commands from the PS3 DualShock")
+    rospy.loginfo("     ▲  : reset odometry")
+    rospy.loginfo("     X  : Enable left joystick for direction")
+    rospy.loginfo("     □  : Get battery level")
+    rospy.loginfo("     L1 : Kill all nodes")
+
+
+
     while not rospy.is_shutdown():
         r.sleep()
     pass

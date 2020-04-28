@@ -1,0 +1,7 @@
+<!-- at_robot_system.launch -->
+<launch>
+    <machine name="laptop" address="oldjunk" user="benne" password="Thalescom02" env-loader="/opt/ros/kinetic/env.sh"/>
+    <node machine="laptop" pkg="joy" name="joy_node" type="joy_node"/>
+    <node machine="laptop" name="teleop" pkg="teleop_twist_joy" type="teleop_node"/>
+    <node machine="laptop" name="terta_service" pkg="tetra_ros" type="tetra_utility.py" output="screen" required='true'/>
+</launch>
