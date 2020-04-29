@@ -1,15 +1,13 @@
 <!-- at_robot_system.launch -->
 
 <launch>
-    <machine name="laptopRobotique" address="192.168.0.20" user="robotique" password="Thalescom02" env-loader="/opt/ros/kinetic/env.sh">
-    <machine name="ubiquity" address="192.168.0.21" user="ubuntu" password="ubuntu" env-loader="/opt/ros/kinetic/env.sh">
+    <machine name="laptopRobotique" address="LaptopRobot" user="robotique" password="Thalescom02" env-loader="/opt/ros/kinetic/env.sh"/>
+    <machine name="ubiquity" address="UbiquityRobot" user="ubuntu" password="ubuntu" default="True" env-loader="/opt/ros/kinetic/env.sh"/>
 
     <group ns="laptopRobotique">
-        <node machine="laptopRobotique" pkg="joy" name="joy_node" type="joy_node" output="screen"></node>
-        <node machine="laptopRobotique" pkg="teleop_twist_joy"  type="teleop_node" name="teleop_node" respawn="false" output="screen">
+        <node machine="laptopRobotique" pkg="joy" name="joy_node" type="joy_node"></node>
         <node machine="laptopRobotique" name="teleop" pkg="teleop_twist_joy" type="teleop_node"/>
-        <node machine="laptopRobotique" name="lidar" pkg="urg_node" type="urg_node"/>
-        <node machine="laptopRobotique" name="terta_service" pkg="tetra_ros" type="tetra_utility.py"/>
+
 
         </node>
     </group>
@@ -19,6 +17,8 @@
             <param name="port" value="/dev/ttyUSB0"/>
             <param name="baud" value="115200"/>
         </node>
+        <node machine="laptopRobotique" name="lidar" pkg="urg_node" type="urg_node"/>
+        <node machine="laptop" name="terta_service" pkg="tetra_ros" type="tetra_utility.py" output="screen" required='true'/>
     </group>
 
 </launch>
