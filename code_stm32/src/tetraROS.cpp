@@ -30,7 +30,7 @@ tetra_ros::compactOdom msg_compact_odom;
 std_msgs::Int16 msg_command_management;
 
 HAL_Encoder_HandleTypeDef hencoder;
-HAL_LED_HandleTypeDef hled;
+//HAL_LED_HandleTypeDef hled;
 
 double lin_speed_scaled;
 double ang_speed_scaled;
@@ -145,11 +145,11 @@ void initHardware()
 {
     HAL_Motor_Init();
     HAL_Encoder_Init(&hencoder,&htim5,&htim2);
-    HAL_Led_Add(&hled,LED_GPIO_Port,LED_Pin);
+    //HAL_Led_Add(&hled,LED_GPIO_Port,LED_Pin);
     HAL_Battery_Init();
     HAL_TIM_Base_Start(&htim14);
     last_time_us = __HAL_TIM_GET_COUNTER(&htim14);
-    nh.loginfo("TetraROS initialization OK\n");
+    nh.loginfo("TetraROS STM32 initialization OK\n");
 }
 void initTetraROS()
 {
@@ -165,8 +165,6 @@ void initTetraROS()
 
     x_pos = 0;
     y_pos = 0;
-    x_speed =0;
-    y_speed =0;
     ang_pos =0;
 
     tellBatteryLevel();
