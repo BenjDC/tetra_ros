@@ -38,3 +38,4 @@ st_tetra/Core/Inc/urg_node
 st_tetra/Core/Inc/visualization_msgs
 st_tetra/Debug
 st_tetra/Release
+st_tetra/tetra_ros.launch
