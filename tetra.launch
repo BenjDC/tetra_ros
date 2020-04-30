@@ -1,0 +1,17 @@
+<!-- at_robot_system.launch -->
+
+<launch>
+    <machine name="ubiquity" address="ubiquityrobot.local" user="ubuntu" password="ubuntu" default="True" env-loader="/opt/ros/kinetic/env.sh"/>
+
+    <group ns="at_robot">
+        <node machine="ubiquity" pkg="rosserial_python" type="serial_node.py" name="serial_node" output="screen">
+            <param name="port" value="/dev/ttyUSB0"/>
+            <param name="baud" value="115200"/>
+        </node>
+        <node machine="ubiquity" pkg="joy" name="joy_node" type="joy_node"></node>
+        <node machine="ubiquity" name="teleop" pkg="teleop_twist_joy" type="teleop_node"/>
+        <!--node machine="laptopRobotique" name="lidar" pkg="urg_node" type="urg_node"/-->
+        <node machine="ubiquity" name="terta_service" pkg="tetra_ros" type="tetra_utility.py" output="screen" required='true'/>
+    </group>
+
+</launch>
