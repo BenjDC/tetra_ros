@@ -1,0 +1,15 @@
+#reference file for lidar configuration in /etc/network/interfaces
+
+# Include files from /etc/network/interfaces.d:
+source-directory /etc/network/interfaces.d
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+#configure the lidar ethernet interface (static ip)
+auto eth0
+iface eth0 inet static
+	address 10.0.0.15
+	netmask 255.255.255.0
+
