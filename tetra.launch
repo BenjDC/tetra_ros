@@ -7,9 +7,9 @@
         <param name="port" value="/dev/ttyUSB0"/>
         <param name="baud" value="115200"/>
     </node>
-    <node machine="tetra" pkg="joy" name="joy_node" type="joy_node"></node>
+    <!--node machine="tetra" pkg="joy" name="joy_node" type="joy_node"/-->
     <node machine="tetra" name="teleop" pkg="teleop_twist_joy" type="teleop_node"/>
-    <node machine="laptopRobotique" name="lidar" pkg="urg_node" type="urg_node">
+    <node machine="tetra" name="lidar" pkg="urg_node" type="urg_node">
         <param name="ip_address" value="10.0.0.10"/>
     </node>
     <node machine="tetra" name="terta_service" pkg="tetra_ros" type="tetra_utility.py" output="screen" required='true'/>
