@@ -42,9 +42,20 @@ float y_pos;
 float ang_pos;
 int total_right_count;
 int total_left_count;
-uint16_t last_time_us;
-uint16_t last_vel_cmd;
+uint32_t last_time_us;
+uint32_t last_vel_cmd;
 
+char * const power_status_led_sequence[] = {
+		".             ", 	//!RUNNING
+		"__        ", 		//!RFU
+		". . . . . . . " 	//!LOW_BATT
+};
+typedef enum
+{
+	RUNNING = 0,
+	RFU,
+	LOW_BATT
+} POWER_STATUS;
 
 
 double xpid_kp = 4000.0; // 1000.0
@@ -193,15 +204,25 @@ void loopTetraROS()
 {
 
     nh.spinOnce();
-    uint16_t current_time_us = __HAL_TIM_GET_COUNTER(&htim14);
-    uint16_t delta_time_us = current_time_us-last_time_us;
 
-	//watchdog for vel_cmd : if no cmd_vel instructionhas been recieved since 500ms, stop the robot
-    if ((current_time_us-last_vel_cmd) > 500000)
-    {
-    	lin_speed_scaled =0.0f;
-    	ang_speed_scaled =0.0f;
-    }
+    uint32_t current_time_us = __HAL_TIM_GET_COUNTER(&htim14);
+    uint32_t delta_time_us = current_time_us-last_time_us;
+
+
+/*
+    //! Power and LED state
+	float power_level = HAL_Battery_Get(VBATT);
+	if(power_level<(3.0*3.6))
+	{
+		HAL_Led_Sequence(&hled,power_status_led_sequence[LOW_BATT],true);
+	}
+	else
+	{
+
+		HAL_Led_Sequence(&hled,power_status_led_sequence[LOW_BATT],true);
+	}
+	HAL_Led_Process();
+	*/
 
     if(delta_time_us>=4808) //! 208Hz (ODR)
     {
