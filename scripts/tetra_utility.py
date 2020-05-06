@@ -27,7 +27,7 @@ def compactOdom_callback(odom_data):
     # first, we'll publish the odom transform over tf
     odom_broadcaster.sendTransform((odom_data.x_pos, odom_data.y_pos, 0.), odom_quat, odom_data.stamp, "base_link", "odom")
     # the laser tf is 20 cm +x and 5cm +z (to check)
-    laser_broadcaster.sendTransform((0.20, 0., 0.10), laser_quat, odom_data.stamp, "odom", "laser")
+    laser_broadcaster.sendTransform((0.20, 0., 0.10), laser_quat, odom_data.stamp, "base_link", "laser")
 
     # next, we'll publish the odometry message over ROS
     odom = Odometry()
@@ -59,7 +59,7 @@ def joy_callback(joydata):
         rospy.loginfo("KILL NOW")
         rospy.signal_shutdown("Kill from controller ")
 
-
+    
 def tetra_utility_loop():
     rospy.init_node('tetra_utility', disable_signals=True)
     rospy.Subscriber('compact_odom', compactOdom, compactOdom_callback)
