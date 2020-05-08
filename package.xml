@@ -68,6 +68,7 @@
   <exec_depend>rosserial_python</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>teleop_twist_joy</exec_depend>
+  <exec_depend>urg_node</exec_depend>
   <exec_depend>message_runtime</exec_depend>
 
 
