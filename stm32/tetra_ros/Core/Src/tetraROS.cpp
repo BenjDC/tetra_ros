@@ -42,10 +42,9 @@ float y_pos;
 float ang_pos;
 int total_right_count;
 int total_left_count;
-uint16_t last_time_us;
-uint16_t last_vel_cmd;
-
-
+uint32_t last_time_us;
+uint32_t last_vel_cmd;
+bool connected;
 
 double xpid_kp = 4000.0; // 1000.0
 double xpid_ki = 100.0; // 2.0
@@ -165,13 +164,11 @@ void initHardware()
     HAL_Led_Init();
     HAL_Led_Add(&hled,LED_GPIO_Port,LED_Pin);
 
-    nh.loginfo("TetraROS STM32 initialization OK\n");
+
 }
 void initTetraROS()
 {
     initHardware();
-
-    HAL_Led_Set(&hled);
 
     HAL_Delay(1000);
     HAL_Motor_Set(HAL_MOTOR_ALL,HAL_MOTOR_AUTO,0);
@@ -184,27 +181,40 @@ void initTetraROS()
     x_pos = 0;
     y_pos = 0;
     ang_pos =0;
-
-    tellBatteryLevel();
+    connected=false;
 }
+
 
 
 void loopTetraROS()
 {
 
     nh.spinOnce();
-    uint16_t current_time_us = __HAL_TIM_GET_COUNTER(&htim14);
-    uint16_t delta_time_us = current_time_us-last_time_us;
 
-	//watchdog for vel_cmd : if no cmd_vel instructionhas been recieved since 500ms, stop the robot
-    if ((current_time_us-last_vel_cmd) > 500000)
-    {
-    	lin_speed_scaled =0.0f;
-    	ang_speed_scaled =0.0f;
-    }
+    uint32_t current_time_us = __HAL_TIM_GET_COUNTER(&htim14);
+    uint32_t delta_time_us = current_time_us-last_time_us;
+
+
 
     if(delta_time_us>=4808) //! 208Hz (ODR)
     {
+
+
+		if (!nh.connected())
+		{
+			lin_speed_scaled = 0;
+			ang_speed_scaled = 0;
+			connected = false;
+			HAL_Led_Reset(&hled);
+		}
+		else if (!connected)
+		{
+			connected = true;
+			nh.loginfo("TetraROS STM32 connected\n");
+		    tellBatteryLevel();
+			HAL_Led_Set(&hled);
+		}
+
 
         last_time_us = current_time_us;
         float period_us = (float)(delta_time_us)/1000000.0f; //s
