@@ -26,8 +26,8 @@ def compactOdom_callback(odom_data):
 
     # first, we'll publish the odom transform over tf
     odom_broadcaster.sendTransform((odom_data.x_pos, odom_data.y_pos, 0.), odom_quat, odom_data.stamp, "base_link", "odom")
-    # the laser tf is 20 cm +x and 5cm +z (to check)
-    laser_broadcaster.sendTransform((0.20, 0., 0.10), laser_quat, odom_data.stamp, "laser", "base_link")
+    # the laser tf is 3 cm +x and 10cm +z
+    laser_broadcaster.sendTransform((0.03, 0., 0.10), laser_quat, odom_data.stamp, "laser", "base_link")
 
     # next, we'll publish the odometry message over ROS
     odom = Odometry()
