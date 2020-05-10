@@ -26,4 +26,5 @@ tetraROS utilise les paquets existants suivants
 
 * **tetra_utility.py** : récupère les inputs du gamepad pour modifier les modes 
 
-
+#commande gmapping : 
+ rosrun gmapping slam_gmapping _scan:=scan _base_frame:=laser _xmin:="-10" _xmax:="10" _ymin:=-10 _ymax:=10 _delta:=0.01
