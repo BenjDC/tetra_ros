@@ -55,7 +55,7 @@ def joy_callback(joydata):
         rospy.loginfo("get battery level")
         mgmt_pub.publish(3)
 
-    if ((joydata.buttons[4]) == 1):
+    if ((joydata.buttons[9]) == 1):
         rospy.loginfo("KILL NOW")
         rospy.signal_shutdown("Kill from controller ")
 
@@ -71,7 +71,7 @@ def tetra_utility_loop():
     rospy.loginfo("     ▲  : reset odometry")
     rospy.loginfo("     X  : Enable left joystick for direction")
     rospy.loginfo("     □  : Get battery level")
-    rospy.loginfo("     L1 : Kill all nodes")
+    rospy.loginfo("     START : Kill all nodes")
 
     rospy.sleep(1)
     rospy.loginfo("Attemting to get battery level ")
