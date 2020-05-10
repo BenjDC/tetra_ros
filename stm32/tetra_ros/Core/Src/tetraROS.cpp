@@ -182,12 +182,15 @@ void initTetraROS()
     y_pos = 0;
     ang_pos =0;
     connected=false;
+
+    nh.loginfo("TetraROS hardware initiated\n");
 }
 
 
 
 void loopTetraROS()
 {
+	HAL_IWDG_Refresh(&hiwdg);
 
     nh.spinOnce();
 

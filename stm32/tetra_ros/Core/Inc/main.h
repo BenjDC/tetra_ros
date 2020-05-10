@@ -82,6 +82,7 @@ void Error_Handler(void);
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim5;
 TIM_HandleTypeDef htim14;
+IWDG_HandleTypeDef hiwdg;
 
 
 /* USER CODE END Private defines */
