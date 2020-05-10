@@ -32,7 +32,7 @@ def compactOdom_callback(odom_data):
     laser_broadcaster.sendTransform((0.03, 0., 0.10), laser_quat, odom_data.stamp, "laser", "base_link")
 
     # odom and map are the same ?
-    laser_broadcaster.sendTransform((0.00, 0., 0.0), laser_quat, odom_data.stamp, "odom", "map")
+    # laser_broadcaster.sendTransform((0.00, 0., 0.0), laser_quat, odom_data.stamp, "odom", "map")
 
     # next, we'll publish the odometry message over ROS
     odom = Odometry()
