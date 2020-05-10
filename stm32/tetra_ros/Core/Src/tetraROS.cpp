@@ -198,10 +198,10 @@ void loopTetraROS()
 
     if(delta_time_us>=4808) //! 208Hz (ODR)
     {
-
-
 		if (!nh.connected())
 		{
+            //cut motors 
+            HAL_Motor_Set(HAL_MOTOR_ALL,HAL_MOTOR_AUTO,0);
 			lin_speed_scaled = 0;
 			ang_speed_scaled = 0;
 			connected = false;
