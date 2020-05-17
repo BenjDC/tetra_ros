@@ -78,12 +78,6 @@ def tetra_utility_loop():
     rospy.loginfo("     □  : Get battery level")
     rospy.loginfo("     START : Kill all nodes")
 
-    rospy.sleep(1)
-    rospy.loginfo("Attemting to get battery level ")
-
-    mgmt_pub.publish(3)
-
-
 
     while not rospy.is_shutdown():
         r.sleep()
