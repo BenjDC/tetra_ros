@@ -1,10 +1,10 @@
 <launch>
 
  <!-- Run the map server --> 
-    <node name="map_server" pkg="map_server" type="map_server" args="/home/ubuntu/catkin_ws/src/TetraROS/test_slam/salon3.pgm 0.01"/>
+    <node name="map_server" pkg="map_server" type="map_server" args="/home/ubuntu/catkin_ws/src/TetraROS/test_slam/salon4.yaml"/>
 
  <!--- Run AMCL --> 
-    <include file="/opt/ros/kinetic/share/amcl/examples/amcl_diff.launch" />
+    <include file="./test_slam/amcl_diff.launch" />
 
    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     <rosparam file="./test_slam/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
