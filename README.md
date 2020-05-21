@@ -27,11 +27,11 @@ tetraROS utilise les paquets existants suivants
 
 **tetra_utility.py** : 
 * récupère les inputs du gamepad pour modifier les modes :
-    * ▲     : reset odometry
-    * X     : Enable left joystick for direction
-    * □     : Get battery level
+    * ▲ : reset odometry
+    * X : Enable left joystick for direction
+    * □ : Get battery level
     * START : Kill all node
-* publie les TF pour necessaire pour le lidar (laser) et odometrie (odom)
+* publie les TF necessaires pour le lidar (laser) et odometrie (odom)
 * formate l'odométrie
 
 ## Pilotage du robot
