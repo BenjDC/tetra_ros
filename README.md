@@ -13,15 +13,6 @@ tetraROS est basée sur les éléments suivants :
 * Un Raspberry Pi 3, qui exécute le Coeur ROS, et l'algorithme SLAM.
 * Un PC vers lequel est remonté la télémétrie, et les commandes de contrôle via un gamepad 
 
-## Dépendances
-
-tetraROS utilise les paquets existants suivants
-
-* **rosserial_python** : communication ROS entre RPi et STM32
-* **joy** : input du gamepad (testé avec une manette DualShock3)
-* **teleop_twist_joy** : emet une commande de direction à partir de l'état du gamepad
-* **urg_node** : gestion du Lidar Hokuyo (pas encore implémenté/testé)
-
 
 ## Noeuds
 
