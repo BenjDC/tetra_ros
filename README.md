@@ -49,6 +49,6 @@ Le pilotage du robot fonctionne avec le fichier **tetra.launch**. Un gamepad PS3
 
 * La stabilité de rosserial_stm32 est perfectible. Bug zoolander à corrgiger : quand le robot tourne à droite il perd la liaison (le watchdog aide à rendre les choses moins pénibles)
 * configurer le launchfile pour pouvoir lancer des noeuds sur plusieurs machines à la fois (pour le moment le noeud joy doit être lancé manuellement)
-* configurer le joypad directement sur le raspberry pi
+* configurer le joypad directement sur le raspberry pi (voir https://www.piborg.org/blog/rpi-ps3-help)
 * Vérifier le streaming camera (énormément de latence !)
 
