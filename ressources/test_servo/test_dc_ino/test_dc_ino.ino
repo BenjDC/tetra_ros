@@ -18,10 +18,17 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define FIRE_INIT 1700
 #define FIRE_PUSH 1000
 
+#define READY 0
+#define RUN 1
+#define FIRE 2
 
+#define RUN_TIME 2000
+#define RECOIL_TIME 2500
 
 
 ros::NodeHandle  nh;
+int fire_state;
+unsigned long fire_time;
 
 void joy_cb( const sensor_msgs::Joy& cmd_msg) {
 
@@ -31,51 +38,41 @@ void joy_cb( const sensor_msgs::Joy& cmd_msg) {
   int motor_power = 0;
 
 
-  if (cmd_msg.axes[0] != 0)
-  {
-    int servo_tilt = (int)(SERVO_MAX - SERVO_MIN * (cmd_msg.axes[0] + 1) / 2);
-    sprintf(message, "tilt : %d\n", servo_tilt);
-    nh.loginfo(message);
+  //direction
+  int servo_tilt = (int)(TILT_INIT + TILT_RANGE * cmd_msg.axes[0]);
+  int servo_pan = (int)(PAN_INIT + PAN_RANGE * cmd_msg.axes[0]);
+  
+
+  pwm.writeMicroseconds(0, servo_tilt);
+  pwm.writeMicroseconds(1, servo_pan);
     
-    pwm.writeMicroseconds(0, PAN_INIT);
-  }
-  if (cmd_msg.axes[1] != 0)
+
+  sprintf(message, "tilt : %d, pan : %d\n", servo_tilt, servo_pan);
+  nh.loginfo(message);
+    
+  if (cmd_msg.buttons[5] == 1)
   {
-    int servo_pan = (int)(SERVO_MAX - SERVO_MIN * (cmd_msg.axes[1] + 1) / 2);
-    sprintf(message, "pan : %d\n", servo_pan);
-    nh.loginfo(message);
-    pwm.setPWM(1, 0, servo_pan);
+    //are we firing ? 
+    if (fire_state == READY)
+    {
+        //Motor A forward @ configured speed
+      digitalWrite(12, HIGH); //Establishes forward direction of Channel A
+      digitalWrite(9, LOW);   //Disengage the Brake for Channel A
+      analogWrite(3, motor_power);   //Spins the motor on Channel A at full speed
+
+      //Motor B backward @ half speed
+      digitalWrite(13, LOW);  //Establishes backward direction of Channel B
+      digitalWrite(8, LOW);   //Disengage the Brake for Channel B
+      analogWrite(11, motor_power);    //Spins the motor on Channel B at half speed
+
+      fire_state = RUN;
+      fire_time = millis();
+
+      sprintf(message, "running hot !");
+      nh.loginfo(message);
+  
+    }
   }
-
-  if (cmd_msg.axes[4] != 0)
-  {
-    int servo_gun = (int)(SERVO_MAX - SERVO_MIN * (cmd_msg.axes[4] + 1) / 2);
-    sprintf(message, "gun : %d\n", servo_gun);
-    pwm.setPWM(2, 0, servo_gun);
-    nh.loginfo(message);
-  }
-  if (motor_power > 0)
-  {
-
-    //Motor A forward @ configured speed
-    digitalWrite(12, HIGH); //Establishes forward direction of Channel A
-    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
-    analogWrite(3, motor_power);   //Spins the motor on Channel A at full speed
-
-    //Motor B backward @ half speed
-    digitalWrite(13, LOW);  //Establishes backward direction of Channel B
-    digitalWrite(8, LOW);   //Disengage the Brake for Channel B
-    analogWrite(11, motor_power);    //Spins the motor on Channel B at half speed
-
-  }
-  else
-  {
-
-    digitalWrite(9, HIGH);  //Engage the Brake for Channel A
-    digitalWrite(8, HIGH);  //Engage the Brake for Channel B
-
-  }
-
 }
 
 ros::Subscriber<sensor_msgs::Joy> sub("joy", joy_cb);
@@ -103,6 +100,9 @@ void setup() {
   pwm.writeMicroseconds(1, TILT_INIT);
   pwm.writeMicroseconds(2, FIRE_INIT);
 
+  fire_state = READY;
+  fire_time = millis();
+
   delay(10);
 
   nh.initNode();
@@ -110,8 +110,32 @@ void setup() {
 
 }
 
+void fire_management()
+{
+  if (fire_state == RUN)
+  {
+    if ((millis() - fire_time) > RUN_TIME)
+    {
+      pwm.writeMicroseconds(2, FIRE_PUSH);
+      fire_state = FIRE;
+    }
+  }
+  else if (fire_state == FIRE)
+  {
+    if ((millis() - fire_time) > RECOIL_TIME)
+    {
+      pwm.writeMicroseconds(2, FIRE_INIT);
+      digitalWrite(9, HIGH);  //Engage the Brake for Channel A
+      digitalWrite(8, HIGH);  //Engage the Brake for Channel B
+      fire_state = READY;
+    }
+  }
+}
+
 void loop() {
   nh.spinOnce();
+
+  fire_management();
   delay(10);
 
 }
