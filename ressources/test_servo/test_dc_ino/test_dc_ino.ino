@@ -9,11 +9,11 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
 
-#define PAN_INIT 1330
-#define PAN_RANGE 600
-
 #define TILT_INIT 1250
 #define TILT_RANGE 200
+
+#define PAN_INIT 1330
+#define PAN_RANGE 600
 
 #define FIRE_INIT 1700
 #define FIRE_PUSH 1000
@@ -39,16 +39,16 @@ void joy_cb( const sensor_msgs::Joy& cmd_msg) {
 
 
   //direction
-  int servo_tilt = (int)(TILT_INIT + TILT_RANGE * cmd_msg.axes[0]);
   int servo_pan = (int)(PAN_INIT + PAN_RANGE * cmd_msg.axes[0]);
+  int servo_tilt = (int)(TILT_INIT + TILT_RANGE * cmd_msg.axes[1]);
   
 
-  pwm.writeMicroseconds(0, servo_tilt);
-  pwm.writeMicroseconds(1, servo_pan);
+  pwm.writeMicroseconds(0, servo_pan);
+  pwm.writeMicroseconds(1, servo_tilt);
     
 
-  sprintf(message, "tilt : %d, pan : %d\n", servo_tilt, servo_pan);
-  nh.loginfo(message);
+  //sprintf(message, "pan : %d, tilt : %d\n", servo_pan, servo_tilt);
+  //nh.loginfo(message);
     
   if (cmd_msg.buttons[5] == 1)
   {
@@ -96,8 +96,8 @@ void setup() {
   pwm.setOscillatorFrequency(27000000);
   pwm.setPWMFreq(SERVO_FREQ);  // Analog servos run at ~50 Hz updates
 
-  pwm.writeMicroseconds(0, PAN_INIT);
-  pwm.writeMicroseconds(1, TILT_INIT);
+  pwm.writeMicroseconds(0, TILT_INIT);
+  pwm.writeMicroseconds(1, PAN_INIT);
   pwm.writeMicroseconds(2, FIRE_INIT);
 
   fire_state = READY;
@@ -136,6 +136,6 @@ void loop() {
   nh.spinOnce();
 
   fire_management();
-  delay(10);
+  //delay(10);
 
 }
