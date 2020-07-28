@@ -9,10 +9,10 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
 
-#define TILT_INIT 1250
+#define TILT_INIT 1330
 #define TILT_RANGE 200
 
-#define PAN_INIT 1330
+#define PAN_INIT 1250
 #define PAN_RANGE 600
 
 #define FIRE_INIT 1700
@@ -22,8 +22,10 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define RUN 1
 #define FIRE 2
 
-#define RUN_TIME 2000
-#define RECOIL_TIME 2500
+#define RUN_TIME 3000
+#define RECOIL_TIME 4500
+
+#define FIRE_DC_SPEED 200
 
 
 ros::NodeHandle  nh;
@@ -31,8 +33,6 @@ int fire_state;
 unsigned long fire_time;
 
 void joy_cb( const sensor_msgs::Joy& cmd_msg) {
-
-  char message[100];
 
   //int motor_power = (int)((cmd_msg.axes[2])*150);
   int motor_power = 0;
@@ -46,11 +46,8 @@ void joy_cb( const sensor_msgs::Joy& cmd_msg) {
   pwm.writeMicroseconds(0, servo_pan);
   pwm.writeMicroseconds(1, servo_tilt);
     
-
-  //sprintf(message, "pan : %d, tilt : %d\n", servo_pan, servo_tilt);
-  //nh.loginfo(message);
     
-  if (cmd_msg.buttons[5] == 1)
+  if (cmd_msg.buttons[4] == 1)
   {
     //are we firing ? 
     if (fire_state == READY)
@@ -58,19 +55,16 @@ void joy_cb( const sensor_msgs::Joy& cmd_msg) {
         //Motor A forward @ configured speed
       digitalWrite(12, HIGH); //Establishes forward direction of Channel A
       digitalWrite(9, LOW);   //Disengage the Brake for Channel A
-      analogWrite(3, motor_power);   //Spins the motor on Channel A at full speed
+      analogWrite(3, FIRE_DC_SPEED);   //Spins the motor on Channel A at full speed
 
       //Motor B backward @ half speed
       digitalWrite(13, LOW);  //Establishes backward direction of Channel B
       digitalWrite(8, LOW);   //Disengage the Brake for Channel B
-      analogWrite(11, motor_power);    //Spins the motor on Channel B at half speed
+      analogWrite(11, FIRE_DC_SPEED);    //Spins the motor on Channel B at half speed
 
       fire_state = RUN;
       fire_time = millis();
 
-      sprintf(message, "running hot !");
-      nh.loginfo(message);
-  
     }
   }
 }
